@@ -112,7 +112,7 @@ class ScriptWriter(object):
         pdict = {
             'mode'        : '2'   if mode  is 'genmc' else '0',
             'ntuple_flag' : '0'   if dtype is 'skim'  else '1',
-            'min_ds_mom'  : '2.0' if dtype is 'skim'  else '1.5'
+            'min_ds_mom'  : '1.5' if dtype is 'skim'  else '2.0'
         }
         scripts = []
         for runs, rune in zip(runs[:-1], runs[1:]):
@@ -120,6 +120,32 @@ class ScriptWriter(object):
             if submit:
                 call(['bsub', '-q', self.queue, scripts[-1]])
         return scripts
+
+    def __writeSigMCScript(self, ty, stream, exp, submit):
+        """ """
+        paths = self.fmgr.sigMCPaths(ty, stream, exp)
+        if not paths['procevt']:
+            return
+        pdict = {
+            'mode'        : '1',  # sigmc
+            'ntuple_flag' : '1',
+            'min_ds_mom'  : '2.0',
+            'ofile'       : paths['outfile']
+        }
+        self.f = open(paths['scrfile'], 'w')
+        self.__writeHead()
+        self.__writePath('tuple', paths['logfile'])
+        self.f.write('nprocess set 0\n')
+        self.__writeFixMdstPars()
+        self.__writeModulePars(self.name, pdict)
+        for fname in paths['procevt']:
+            self.f.write('process_event ' + fname + '\n')
+        self.f.write('EOF\n')
+        self.f.close()
+        call(['chmod', '755', paths['scrfile']])
+        if submit:
+            call(['bsub', '-q', self.queue, paths['scrfile']])
+        return paths['scrfile']
 
     def writeGenSkimScripts(self, exp, stream, gentype, submit=True):
         """ Proxi for gen skim """
@@ -136,6 +162,10 @@ class ScriptWriter(object):
     def writeDataTupleScripts(self, exp, submit=True):
         """ Proxi method for data tuple """
         return self.__writeScripts('data', 'tuple', exp, submit)
+
+    def writeSigMCScript(self, ty, stream, exp, submit=True):
+        """ Proxi method for sig NM tuple """
+        return self.__writeSigMCScript(ty, stream, exp, submit)
 
 def main():
     """ Unit test """

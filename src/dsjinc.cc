@@ -88,16 +88,6 @@ void dsjinc::term(void) {
         dsjTree->Write();
         dsTree->Write();
         tfile->Close();
-
-//        delete evt;
-//        delete dsevt;
-//        if (m_mode) {
-//            delete mcevt;
-//            delete dsmcevt;
-//        }
-//        delete dsjTree;
-//        delete dsTree;
-//        delete tfile;
     }
 }
 
@@ -113,13 +103,16 @@ void dsjinc::begin_event(BelleEvent* evptr) {
 }
 
 void dsjinc::event(BelleEvent* evptr, int *status) {
-    *status = 0; begin_event(evptr);
-    if (!makeDs(min_ds_mom)) {
+    *status = 0;
+    begin_event(evptr);
+    if (!makeDs(min_ds_mom))
         return;
-    } else if (!ntuple_flag) {
+
+    if (!ntuple_flag) {
         *status = 1;
         return;
     }
+
     recordDs(plm["Ds+"]);
     recordDs(plm["Ds-"]);
 
@@ -198,8 +191,6 @@ void dsjinc::FillDsEvt(Particle& ds) {
     }
     switch (dsevt->mode) {
     case 0:  // Ds+ -> phi pi+
-//        cout << "Ds first child: " << ds.child(0).lund() << endl;
-//        cout << "  phi has " << ds.child(0).nChildren() << " children" << endl;
         FillVec(ds.child(0));
         break;
     case 1:  // Ds+ -> K*0 K+

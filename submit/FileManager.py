@@ -43,14 +43,18 @@ class FileManager(object):
         }
         return self.__genmcNT() if dtype == 'tuple' else self.__genmcSkim()
 
-    def sigMCPaths(self, exp, ty, st):
-        # TODO: implement 
+    def sigMCPaths(self, ty, st, exp):
         """ Args:
             ty: 'ds', 'dsst0' or 'dsst1'
             st: int - stream number
         """
         self.pdict = {'ty' : ty, 'st' : str(st), 'ex' : str(exp)}
-        return self.__pathdict()
+        return self.__pathdict(
+            self.__sigMdstFiles(),
+            self.__sigLogFile(),
+            self.__sigTupleFile(),
+            self.__sigScriptFile()
+        )
 
     def __pathdict(self, procevt='', logfile='', outfile='', scrfile=''):
         return {
@@ -60,11 +64,26 @@ class FileManager(object):
             'scrfile' : scrfile   # script file
         }
 
-    def __sigFiles(self, ):
-        """ """
+    def __sigMdstFiles(self):
+        """ List of mdst files for signal MC """
         fdir = '/'.join([self.sdir, 'SigMC', self.pdict['ty'], 's' + self.pdict['st']])
         fpat = '_'.join(['evtgen', 'exp', self.pdict['ex'], self.pdict['ty'] + 'Inc-*.mdst'])
         return glob('/'.join([fdir, fpat]))
+
+    def __sigLogFile(self):
+        """ Log file for sinal MC """
+        return '/'.join([self.logdir,
+                    '_'.join([self.name, 'sigmc', self.__pdictToInfoSigMC()]) + '.txt'])
+
+    def __sigTupleFile(self):
+        """ Signal MC tuple file """
+        return '/'.join([self.sdir, 'signt',
+                    '_'.join([self.name, 'sigmc', self.__pdictToInfoSigMC()]) + '.root'])
+
+    def __sigScriptFile(self):
+        """ Data script file """
+        return '/'.join([self.scrdir,
+                    '_'.join([self.name, 'sigmc', self.__pdictToInfoSigMC()]) + '.csh'])
 
     def __dataSkim(self):
         """ """
@@ -106,6 +125,10 @@ class FileManager(object):
         """ """
         return '&'.join(['='.join([key, val]) if key != 'ty' else 'ty=evtgen-' + val\
                          for key, val in self.pdict.iteritems()])
+
+    def __pdictToInfoSigMC(self):
+        """ """
+        return '_'.join([key + self.pdict[key] for key in ['ty', 'st', 'ex']])
 
     def __pdictToInfoData(self):
         """ """
