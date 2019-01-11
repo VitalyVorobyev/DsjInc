@@ -123,22 +123,27 @@ void dsjinc::event(BelleEvent* evptr, int *status) {
 
 int dsjinc::makeDs(double minP) {
     Combinator::make_dstophipi(plm, 0);  // Ds+ -> phi pi+ (mode 0)
-    Combinator::make_dstokstk(plm, 1);   // Ds+ -> K*0 K+  (mode 1)
-    Combinator::make_dstoks0k(plm, 2);   // Ds+ -> Ks0 K+  (mode 2)
-    withPCut(plm["Ds+"], minP);
-    withPCut(plm["Ds-"], minP);
+    Combinator::make_dstokstk( plm, 1);  // Ds+ -> K*0 K+  (mode 1)
+    Combinator::make_dstoks0k( plm, 2);  // Ds+ -> Ks0 K+  (mode 2)
+    withPSCut(plm["Ds+"], minP);
+    withPSCut(plm["Ds-"], minP);
     return plm["Ds+"].size() + plm["Ds-"].size();
 }
 
 int dsjinc::makeDsj(void) {
-    Combinator::make_dsjtodsgamma(plm, 0);     // Dsj -> Ds gamma
-//    Combinator::make_dsjtods2gamma(plm, 0);    // Dsj -> Ds gamma gamma
-    Combinator::make_dsjtodspi0(plm, 1);       // Dsj -> Ds pi0
-//    Combinator::make_dsjtods2pi0(plm, 1);      // Dsj -> Ds pi0 pi0
-    Combinator::make_dsjtodspipi(plm, 2);      // Dsj -> Ds pi+ pi-
-    Combinator::make_dsjtodsstgamma(plm, 10);  // Dsj -> Ds* gamma
-    Combinator::make_dsjtodsstpi0(plm, 11);    // Dsj -> Ds* pi0
-    Combinator::make_dsjtodsstpipi(plm, 12);   // Dsj -> Ds* pi+ pi-
+    Combinator::make_dsjtodsgamma(    plm,  0);  // Dsj -> Ds gamma
+    Combinator::make_dsjtodspi0(      plm,  1);  // Dsj -> Ds pi0
+    Combinator::make_dsjtodspipi(     plm,  2);  // Dsj -> Ds pi+ pi-
+    Combinator::make_dsjtods2pi0(     plm,  3);  // Dsj -> Ds pi0 pi0
+    Combinator::make_dsjtods2gamma(   plm, 10);  // Dsj -> Ds gamma gamma
+    Combinator::make_dsjtodspi0gamma( plm, 11);  // Dsj -> Ds pi0 gamma
+    Combinator::make_dsjtodspipigamma(plm, 12);  // Dsj -> Ds pi+ pi- gamma
+    Combinator::make_dsjtods2pi0gamma(plm, 13);  // Dsj -> Ds pi0 pi0 gamma
+
+//    Combinator::make_dsjtodsstgamma(plm, 10);  // Dsj -> Ds* gamma
+//    Combinator::make_dsjtodsstpi0(plm, 11);    // Dsj -> Ds* pi0
+//    Combinator::make_dsjtodsstpipi(plm, 12);   // Dsj -> Ds* pi+ pi-
+//    Combinator::make_dsjtodsstpi0pi0(plm, 13); // Dsj -> Ds* pi0 pi0
     return plm["Dsj+"].size() + plm["Dsj-"].size();
 }
 
@@ -180,9 +185,12 @@ void dsjinc::FillDsEvt(Particle& ds) {
     }
 
     const DUserInfo& dsinfo = static_cast<DUserInfo&>(ds.userInfo());
-    dsevt->mode = dsinfo.Mode();
-    dsevt->m    = ds.p().m();
-    dsevt->flv  = ds.lund() > 0 ? 1 : -1;
+    dsevt->mode  = dsinfo.Mode();
+    dsevt->m     = ds.p().m();
+    dsevt->p     = ds.p().rho();
+    dsevt->costh = ds.p().cosTheta();
+    dsevt->pcms  = pStar(ds.p()).rho();
+    dsevt->flv   = ds.lund() > 0 ? 1 : -1;
 
     RTools::FillTrk(ds.child(1), dsevt->h_ds);
     if (m_mode) {
@@ -216,9 +224,19 @@ void dsjinc::FillEvt(Particle& dsj) {
     evt->mode = dsjinfo.Mode();
     evt->m    = dsj.p().m();
     evt->cos_hel_dsj = RTools::Helicity(dsj);
+
+    const bool inv = (evt->mode == 3) || (evt->mode == 10) || (evt->mode == 13);
+
+//    cout << "mode " << evt->mode << ": " << endl;
+//    for (int i = 0; i < dsj.nChildren(); i++)
+//        cout << "  " << i << ": " << dsj.child(i).lund() << " " << dsj.child(i).p().e() << endl;
+//    cout << endl;
+
     switch (evt->mode % 10) {
     case 0: {  // Dsj* -> X gamma
-        const Particle& gamma = dsj.child(1);
+        int idx = 1;
+        if (inv) idx = dsj.child(0).p().e() > dsj.child(1).p().e() ? 1 : 0;
+        const Particle& gamma = dsj.child(idx);
         RTools::FillGamma(gamma, evt->gam_dsj);
         if (m_mode) RTools::FillGenPInfo(gamma, mcevt->gam_dsj_gen);
         break;}
@@ -226,7 +244,7 @@ void dsjinc::FillEvt(Particle& dsj) {
         const Particle& pi0 = dsj.child(1);
         RTools::FillPi0(pi0, evt->pi0_dsj);
         if (m_mode) RTools::FillGenPInfo(pi0, mcevt->pi0_dsj_gen);
-        break;}
+        break; }
     case 2: {  // Dsj* -> X pi+ pi-
         const Particle& pip = dsj.child(1);
         const Particle& pim = dsj.child(2);
@@ -237,27 +255,50 @@ void dsjinc::FillEvt(Particle& dsj) {
             RTools::FillGenPInfo(pim, mcevt->pim_dsj_gen);
         }
         break; }
+    case 3: { // Dsj* -> X pi0 pi0
+        const Particle& pi01 = dsj.child(0);
+        const Particle& pi02 = dsj.child(1);
+//        if ((pi01.lund() != 111) || (pi02.lund() != 111)) {
+//            cerr << "pi0 " << pi01.lund() << ", pi0 " << pi02.lund()
+//                 << ", mode " << dsjinfo.Mode() << endl;
+//            throw 2;
+//        }
+        RTools::FillPi0(pi01, evt->pi0_dsj);
+        RTools::FillPi0(pi02, evt->pi0lo_dsj);
+        if (m_mode) {
+            RTools::FillGenPInfo(pi01, mcevt->pi0_dsj_gen);
+            RTools::FillGenPInfo(pi02, mcevt->pi0lo_dsj_gen);
+        }
+        break; }
     default:
         cerr << "dsjinc::FillEvt: unknown Dsj mode " << evt->mode << endl;
         break;
     }
 
-    if (evt->DsstFl()) {
-        evt->dmdsst = dsj.p().m() - dsj.child(0).p().m();
-        const Particle& gamma = dsj.child(0).child(1);
-        RTools::FillGamma(gamma, evt->gam_dsst);
-        if(m_mode) RTools::FillGenPInfo(gamma, mcevt->gam_dsst_gen);
+    //    const Particle& Ds = evt->DsstFl() ? dsj.child(0).child(0) : dsj.child(0);
+    const Particle& Ds = dsj.child(inv ? 2 : 0);
+    if (abs(Ds.lund()) != 431) {
+        cerr << "Ds lund is " << Ds.lund() << ", Dsj mode " << dsjinfo.Mode() << endl;
+        throw 1;
     }
-
-    const Particle& Ds = evt->DsstFl() ? dsj.child(0).child(0) : dsj.child(0);
     const DUserInfo& dsinfo = static_cast<const DUserInfo&>(Ds.userInfo());
-
     if (m_mode) RTools::FillGenPInfo(Ds, mcevt->ds_gen);
-
     evt->mode_ds = dsinfo.Mode();
     evt->mds     = Ds.p().m();
+    evt->pcmsds  = pStar(Ds.p()).rho();
     evt->mvec    = Ds.child(0).p().m();
-    evt->cos_hel_vec = RTools::Helicity(Ds.child(0));
+    evt->cos_hel_vec = RTools::Helicity(Ds);
+
+    if (evt->mode / 10) {
+        // A mode with additional photon
+        int idx = dsj.nChildren() - 1;
+        if (evt->mode == 10) idx = dsj.child(0).p().e() > dsj.child(1).p().e() ? 0 : 1;
+        const Particle& gamma = dsj.child(idx);
+        RTools::FillGamma(gamma, evt->gam_dsst);
+        if(m_mode) RTools::FillGenPInfo(gamma, mcevt->gam_dsst_gen);
+        const HepLorentzVector pdsst = Ds.p() + gamma.p();
+        evt->dmdsst = pdsst.m() - Ds.p().m();
+    }
 }
 
 void dsjinc::FillVec(const Particle& vec) {
@@ -265,9 +306,8 @@ void dsjinc::FillVec(const Particle& vec) {
     RTools::FillTrk(vec.child(1), dsevt->h2_vec);
     dsevt->mvec = vec.p().m();
     dsevt->cos_hel_vec = RTools::Helicity(vec);
-    dsevt->pvec[0] = vec.p().x();
-    dsevt->pvec[1] = vec.p().y();
-    dsevt->pvec[2] = vec.p().z();
+    dsevt->pvec = vec.p().rho();
+    dsevt->ptvec = vec.p().perp();
     if (m_mode) {
         RTools::FillGenPInfo(vec.child(0), dsmcevt->h1_vec_gen);
         RTools::FillGenPInfo(vec.child(1), dsmcevt->h2_vec_gen);

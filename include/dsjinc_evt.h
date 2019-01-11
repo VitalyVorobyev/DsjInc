@@ -16,21 +16,22 @@ class dsjinc_evt : public TObject {
     /// 2 : Ds+ -> Ks0 K+
     int mode_ds;
     /// D*sj meson decay mode
-    /// 00 : D*sj+ -> Ds+  gamma
-    /// 01 : D*sj+ -> Ds+  pi0
-    /// 02 : D*sj+ -> Ds+  pi+ pi-
-    /// 10 : D*sj+ -> D*s+ gamma
-    /// 11 : D*sj+ -> D*s+ pi0
-    /// 12 : D*sj+ -> D*s+ pi+ pi-
+    /// 00 : D*sj+ -> Ds+ gamma
+    /// 01 : D*sj+ -> Ds+ pi0
+    /// 02 : D*sj+ -> Ds+ pi+ pi-
+    /// 03 : D*sj+ -> Ds+ pi0 pi0
+    /// 10 : D*sj+ -> Ds+ gamma   gamma
+    /// 11 : D*sj+ -> Ds+ pi0     gamma
+    /// 12 : D*sj+ -> Ds+ pi+ pi- gamma
+    /// 13 : D*sj+ -> Ds+ pi0 pi0 gamma
     int mode;
     int flv;
-    bool DsstFl(void) const;
-    bool DsjPi0Fl(void) const;
-    bool DsjGammaFl(void) const;
     /// D*sj mass
     double m;
     /// Ds+ mass
     double mds;
+    /// Ds+ CMS momentum
+    double pcmsds;
     /// D*s+ mass difference
     double dmdsst;
     /// phi or K*0 mass
@@ -47,16 +48,16 @@ class dsjinc_evt : public TObject {
     GammaInfo gam_dsj;
     /// Photon from D*s -> Ds gamma
     GammaInfo gam_dsst;
-    /// pi0 from D*sj -> D(*)s pi0
+    /// pi0 from D*sj -> D(*)s pi0 (pi0)
     Pi0Info pi0_dsj;
-    /// pi+ from D*- -> D0 pi-
-    TrackInfo pi_dst;
+    /// Lower energy pi0 from D*sj -> D(*)s pi0 pi0
+    Pi0Info pi0lo_dsj;
     /// pi+ from D*sj -> D(*)s pi+ pi-
     TrackInfo pip_dsj;
     /// pi- from D*sj -> D(*)s pi+ pi-
     TrackInfo pim_dsj;
 
-    ClassDef(dsjinc_evt, 1)
+    ClassDef(dsjinc_evt, 2)
 };
 
 #ifdef __MAKECINT__

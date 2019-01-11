@@ -18,15 +18,19 @@ class ds_evt : public TObject {
     int flv;
     /// Ds+ mass
     double m;
+    /// Ds+ momentum in the lab frame
+    double p;
+    /// Ds+ momentum in the CMS frame
+    double pcms;
+    /// cosine of the Ds+ polar angle in the lab frame
+    double costh;
     /// phi or K*0 mass
     double mvec;
-    /// phi or K*0 momentum components
-    double pvec[3];
-
     /// phi or K*0 momentum
-    double Pvec(void) const;
-    /// pt of phi or K*0
-    double ptvec(void) const;
+    double pvec;
+    /// phi or K*0 transverse momentum
+    double ptvec;
+
     /// polar angle of phi or K*0
     double costhvec(void) const;
 
@@ -51,7 +55,7 @@ class ds_evt : public TObject {
     /// Beam interaction point and CMS boost vector
     IPBoost ipbst;
 
-    ClassDef(ds_evt, 1)
+    ClassDef(ds_evt, 2)
 };
 
 #ifdef __MAKECINT__

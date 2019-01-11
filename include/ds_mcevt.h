@@ -31,4 +31,3 @@ class ds_mcevt : public TObject {
 #endif
 
 #endif
-

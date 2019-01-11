@@ -1,5 +1,4 @@
 #include "dsjinc_mcevt.h"
-#include <cmath>
 
 ClassImp(dsjinc_mcevt)
 
@@ -15,6 +14,7 @@ void dsjinc_mcevt::Clear(void) {
 
     gam_dsj_gen.Clear();
     pi0_dsj_gen.Clear();
+    pi0lo_dsj_gen.Clear();
     pip_dsj_gen.Clear();
     pim_dsj_gen.Clear();
 

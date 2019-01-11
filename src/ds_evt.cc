@@ -9,8 +9,11 @@ ds_evt::ds_evt(void) {
 
 void ds_evt::Clear(void) {
     info.Clear();
-    mode = -1; flv = 0; m = 0; mvec = 0;
-    pvec[0] = -99; pvec[1] = -99; pvec[2] = -99;
+    mode = -1; flv = 0;
+    m = 0; p = 0; pcms = 0; costh = 0;
+    mvec = 0;
+    pvec = 0.;
+    ptvec = 0.;
     cos_hel_vec = -2.;
 
     h_ds.Clear();
@@ -22,15 +25,9 @@ void ds_evt::Clear(void) {
     ipbst.Clear();
 }
 
-double ds_evt::Pvec(void) const {
-    return sqrt(pvec[0]*pvec[0] + pvec[1]*pvec[1] + pvec[2]*pvec[2]);
-}
-
-double ds_evt::ptvec(void) const {
-    return sqrt(pvec[0]*pvec[0] + pvec[1]*pvec[1]);
-}
-
 double ds_evt::costhvec(void) const {
-    return pvec[2] / Pvec();
+    double p[3];
+    for (int i = 0; i < 3; i++)
+        p[i] = h1_vec.p[i] + h2_vec.p[i];
+    return p[2] / sqrt(p[0]*p[0] + p[1]*p[1]+ p[2]*p[2]);
 }
-

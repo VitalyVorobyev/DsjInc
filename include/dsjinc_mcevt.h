@@ -25,6 +25,7 @@ class dsjinc_mcevt : public TObject {
     // Dsj final-state particles
     GenParticleInfo gam_dsj_gen;
     GenParticleInfo pi0_dsj_gen;
+    GenParticleInfo pi0lo_dsj_gen;
     GenParticleInfo pip_dsj_gen;
     GenParticleInfo pim_dsj_gen;
 
@@ -36,7 +37,7 @@ class dsjinc_mcevt : public TObject {
     GenParticleInfo h1_vec_gen;
     GenParticleInfo h2_vec_gen;
 
-    ClassDef(dsjinc_mcevt, 1)
+    ClassDef(dsjinc_mcevt, 2)
 };
 
 #ifdef __MAKECINT__
