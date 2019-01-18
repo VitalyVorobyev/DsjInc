@@ -4,6 +4,7 @@
 
 from os import listdir
 from os.path import isfile, join
+from glob import glob
 
 from ROOT import TFile, TCanvas, gSystem
 
@@ -16,7 +17,12 @@ from lvect import Vect, LVect
 mDs = 1.969
 mDssq = mDs**2
 
-tuplePath   = '/home/vitaly/Documents/Students/Kristina/DsJ/tuples'
+tuplePath   = '/home/vitaly/work/DsjInc/tuples'
+
+def sigMCFile(ty, st):
+    """ Get root file name """
+    return glob('/'.join([tuplePath, 'sigint', '_'.join(['dsjinc', 'sigmc', 'ty' + ty, 'st' + str(st), '*.root'])]))
+
 files = {
     'crm' : 'dsjinc_e7_rs0_re1497_str10_charm.root',
     'mix' : 'dsjinc_e7_rs0_re1497_str10_mixed.root',
@@ -56,7 +62,7 @@ def treeToPd(dst):
     dst.GetEvent(0)
     evt, mcevt = dst.evt, dst.mcevt
     info = dst.evt.info
-    for idx, ev in enumerate(dst):
+    for idx, evt in enumerate(dst):
         if idx % 10000 == 0:
             print('{} events'.format(idx))
         if not isGoodEvt(evt):
@@ -126,7 +132,8 @@ def multPlot(num, mu, maxmult=7):
 
 def main():
     """ Unit test """
-    gSystem.Load('libReco.so')
+    gSystem.Load('libRecoObj.so')
+    gSystem.Load('libdsjdata.so')
 
     data = {key : getTree(join(tuplePath, f)) for key, f in files.iteritems()}
     dfms = {key : treeToPd(dst[0]) for key, dst in data.iteritems()}

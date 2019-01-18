@@ -39,3 +39,20 @@ def drawDsMass(t, mode):
     #     if nev > 0:
     #         print(mode)
     #         drawDsMass(dst, idx)
+
+def makeSigDirTree():
+    """ """
+    types = ['ds', 'dsst0', 'dsst1', 'dsUps']
+    modes = [0, 1, 2, 3, 10, 11, 12, 13]
+    for ty in types:
+        dirname = '/'.join([tuplePath, 'signt', ty])
+        if not exists(dirname):
+            mkdir(dirname)
+        for st in np.arange(10):
+            dirname = '/'.join([dirname, str(st)])
+            if not exists(dirname):
+                mkdir(dirname)
+            for mo in modes:
+                dirname = '/'.join([dirname, str(mo)])
+                if not exists(dirname):
+                    mkdir(dirname)
