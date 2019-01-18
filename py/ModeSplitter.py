@@ -4,13 +4,13 @@ from os import listdir, mkdir
 from os.path import isfile, join, exists
 from glob import glob
 
-from ROOT import TFile, gSystem, TChain, TTree
+from ROOT import TFile, gSystem, TChain, TTree, gDirectory, TEventList
 
 import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
 
-from lvect import Vect, LVect
+from selections import DsStr
 
 tuplePath = '/home/vitaly/work/DsjInc/tuples'
 
@@ -50,6 +50,7 @@ modesDict = {
 
 def sigMCFile(ty, st):
     """ Get root file name """
+    print('/'.join([tuplePath, 'signt', '_'.join(['dsjinc', 'sigmc', 'ty' + ty, 'st' + str(st), '*.root'])]))
     return glob('/'.join([tuplePath, 'signt', '_'.join(['dsjinc', 'sigmc', 'ty' + ty, 'st' + str(st), '*.root'])]))
 
 def Branches(mode):
@@ -61,9 +62,9 @@ def Branches(mode):
     }
 
     vec = {  # phi or K*0 fomr Ds
-        'i'  : ['h1_vec_id', 'h1_vec_flag', 'h2_vec_id', 'h2_vec_flag'],
+        # 'i'  : ['h1_vec_id', 'h1_vec_flag', 'h2_vec_id', 'h2_vec_flag'],
         'f'  : ['mvec', 'cos_hel_vec'],
-        'iv' : ['h1_vec_ch', 'h2_vec_ch', 'h_ds_ch']
+        # 'iv' : ['h1_vec_ch', 'h2_vec_ch', 'h_ds_ch']
     }
 
     gamDsj = {  # gamma from Dsj
@@ -82,12 +83,11 @@ def Branches(mode):
         0 : [common, vec, gamDsj],  # Ds gamma
         1 : [common, vec, pi0Dsj],  # Ds pi0
     }
-    
     return {key : [val for sub in modeDict[mode] for val in sub] for key in common.keys()}
 
 class ModeSplitter(object):
     """ Mode Splitted for DsjInc """
-    mds    = 1968.34 # +- 0.07 MeV
+    mds = 1968.34 # +- 0.07 MeV
 
     def __init__(self, name, ty, st, modes):
         """ Constructor """
@@ -95,6 +95,23 @@ class ModeSplitter(object):
         self.ty = ty
         self.st = st
         self.modes = modes
+        self.getChain()
+
+    def split(self):
+        """ """
+        ofile = TFile('/'.join([tuplePath, 'signt', '_'.join([self.name, 'sigmc', ty, 'st' + str(st), 'split']) + '.root']), 'RECREATE')
+        self.makeTree(0, 'dsj_0')
+        self.t.Draw('>>evlist', DsStr())
+        # evl = TEventList(gDirectory.Get('evlist'))
+        self.t.SetEventList(gDirectory.Get('evlist'))
+        for _ in self.t:
+            if self.evt.mode != 0:
+                continue
+            self.fillCommon()
+            self.fillVec()
+            self.t.Fill()
+        ofile.Write()
+        ofile.Close()
 
     def makeTree(self, mode, name):
         """ Flat TTree for a given mode """
@@ -140,6 +157,11 @@ class ModeSplitter(object):
         # MC
         self.vars['h_ds_ch'][:] = self.mcevt.h_ds_gen.ch
 
+    def fillVec(self):
+        """ Fill phi or K*0 variables """
+        self.vars['mvec'] = self.evt.mvec
+        self.vars['cos_hel_vec'] = self.evt.cos_hel_vec
+
     def findDecay(self, idhep, key):
         """ Identify mode in the EvtGen table """
         nphep = np.array([x for x in self.idhep])
@@ -158,13 +180,18 @@ class ModeSplitter(object):
 
     def getChain(self):
         """ """
-        self.intree = TChain('dsj', 'dsj')
+        self.chain = TChain('dsj', 'dsj')
+        print(sigMCFile(self.ty, self.st))
         for fname in sigMCFile(self.ty, self.st):
-            self.intree.Add(fname)
+            self.chain.Add(fname)
+        self.intree = self.chain
+        self.intree.GetEvent(0)
+        print('evt' in dir(self.intree))
         print('{} Dsj candidates'.format(self.intree.GetEntries()))
         self.evt   = self.intree.evt
         self.mcevt = self.intree.mcevt
         self.info  = self.evt.info
+        print(dir(self.mcevt))
         self.idhep = self.mcevt.genhep.idhep
         self.daF   = self.mcevt.genhep.daF
         self.daL   = self.mcevt.genhep.daL
@@ -190,7 +217,8 @@ def main():
     """ Unit test """
     gSystem.Load('libRecoObj.so')
     gSystem.Load('libdsjdata.so')
-    ms = ModeSplitter('dsjinc', 'dsUps', 0, [0, 1, 2, 3, 10, 11, 12, 13])
+    ms = ModeSplitter('dsjinc', 'dsst0', 1, [0, 1, 2, 3, 10, 11, 12, 13])
+    ms.split()
     # ms.splitSigMC()
 
 if __name__ == '__main__':
