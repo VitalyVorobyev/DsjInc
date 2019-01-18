@@ -15,14 +15,14 @@ from lvect import Vect, LVect
 tuplePath = '/home/vitaly/work/DsjInc/tuples'
 
 ids = {
-        'dsj0+'  :  10431,
-        'dsj0-'  : -10431,
-        'dsj1+'  :  20433,
-        'dsj1-'  : -20433,
-        'ds+'    :  431,
-        'ds-'    : -431,
-        'dsst+'  :  433,
-        'dsst-'  : -433,
+        'Dsj0+'  :  10431,
+        'Dsj0-'  : -10431,
+        'Dsj1+'  :  20433,
+        'Dsj1-'  : -20433,
+        'Ds+'    :  431,
+        'Ds-'    : -431,
+        'Ds*+'   :  433,
+        'Ds*-'   : -433,
         'gamma'  :  22,
         'pi0'    :  111,
         'phi'    :  333,
@@ -30,22 +30,23 @@ ids = {
         'pi-'    : -211,
         'K+'     :  321,
         'K-'     : -321,
-        'Kst+'   :  313,
-        'Kst-'   : -313,
+        'K*0'    :  313,
+        'K*0bar' : -313,
         'Ks0'    :  310
     }
 
-modeDsjSets = {
-        0 : [set([ids['ds'], ids['gamma']]), set([-ids['ds'], ids['gamma']])],
-        1 : [set([ids['ds'], ids['pi0']]),   set([-ids['ds'], ids['pi0']])],
-        2 : [set([ids['ds'], ids['pi0']]),   set([-ids['ds'], ids['pi0']])],
+modesDict = {
+    'Dsj' : {
+        0 : [set([ids['Ds+'], ids['gamma']]), set([ids['Ds-'], ids['gamma']])],
+        1 : [set([ids['Ds+'], ids['pi0']]),   set([ids['Ds-'], ids['pi0']])],
+        2 : [set([ids['Ds+'], ids['pi0']]),   set([ids['Ds-'], ids['pi0']])]
+    },
+    'Ds' : {
+        0 : [set([ids['phi'], ids['pi+']]), set([ids['phi'],    ids['pi-']])],
+        1 : [set([ids['K*0'], ids['K-']]),  set([ids['K*0bar'], ids['K+']])],
+        2 : [set([ids['Ks0'], ids['K+']]),  set([ids['Ks0'],    ids['K-']])]
     }
-
-modeDsSets = {
-        0 : [set([ids['phi'], ids['pi+']]), set([ids['phi'], ids['pi-']])],
-        1 : [set([ids['ds'], ids['pi0']]),   set([-ids['ds'], ids['pi0']])],
-        2 : [set([ids['ds'], ids['pi0']]),   set([-ids['ds'], ids['pi0']])],
-    }
+}
 
 def sigMCFile(ty, st):
     """ Get root file name """
@@ -75,12 +76,12 @@ def Branches(mode):
         'i'  : ['gam_dsj_id', 'gam_dsj_flag'],
         'f'  : ['pi0_dsj_eg1', 'pi0_dsj_eg2', 'pi0_dsj_p',  'gam_dsj_costh'],
         'iv' : ['pi0_dsj_ch']
-        }
+    }
 
     modeDict = {
         0 : [common, vec, gamDsj],  # Ds gamma
         1 : [common, vec, pi0Dsj],  # Ds pi0
-        }
+    }
     
     return {key : [val for sub in modeDict[mode] for val in sub] for key in common.keys()}
 
@@ -126,7 +127,10 @@ class ModeSplitter(object):
         # MC
         self.vars['h_ds_id']   = self.mcevt.h_ds_gen.id
         self.vars['h_ds_flag'] = self.mcevt.h_ds_gen.flag
-        
+        self.vars['tmode'] = self.findDecay(ids['Dsj0+'], 'Dsj') - self.findDecay(ids['Dsj0-'], 'Dsj')\
+                           + 100*self.findDecay(ids['Dsj1+'], 'Dsj') - 100*self.findDecay(ids['Dsj1-'], 'Dsj')
+        self.vars['tdsmode'] = self.findDecay(ids['Ds+'], 'Ds') - self.findDecay(ids['Ds-'], 'Ds')
+
         # Float branches
         self.vars['m']     = self.evt.m - self.evt.mds + ModeSplitter.mds
         self.vars['mds']   = self.evt.mds
@@ -136,7 +140,21 @@ class ModeSplitter(object):
         # MC
         self.vars['h_ds_ch'][:] = self.mcevt.h_ds_gen.ch
 
-    def find
+    def findDecay(self, idhep, key):
+        """ Identify mode in the EvtGen table """
+        nphep = np.array([x for x in self.idhep])
+        idxList = np.nonzero(nphep == idhep)
+        if not idxList:
+            return -1
+        decays = []
+        for idx in idxList:
+            fsp = set([self.idhep[i] for i in np.arange(self.daF[idx], self.daL[idx])])
+            for key0, fsp0 in modesDict[key]:
+                if fsp in fsp0:
+                    decays.append(key0)
+        if len(decays) > 1:
+            print('several modes found: {}'.format(decays))
+        return sum(decays)
 
     def getChain(self):
         """ """
@@ -147,6 +165,9 @@ class ModeSplitter(object):
         self.evt   = self.intree.evt
         self.mcevt = self.intree.mcevt
         self.info  = self.evt.info
+        self.idhep = self.mcevt.genhep.idhep
+        self.daF   = self.mcevt.genhep.daF
+        self.daL   = self.mcevt.genhep.daL
 
     # def splitSigMC(self):
     #     """ Split signal MC """
