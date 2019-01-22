@@ -11,6 +11,7 @@ import matplotlib.pyplot as plt
 import pandas as pd
 
 from selections import DsStr
+from GenHepAnalyzer import GenHepAnalyser
 
 tuplePath = '/home/vitaly/work/DsjInc/tuples'
 
@@ -19,11 +20,23 @@ def sigMCFile(ty, st):
     return glob('/'.join([tuplePath, 'signt', '_'.join(['dsjinc', 'sigmc', 'ty' + ty, 'st' + str(st), '*.root'])]))
 
 class ModeSplitter(object):
-    """ Mode Splitted for DsjInc """
+    """ Mode Splitter for DsjInc """
     mds = 1.96834 # +- 0.07 MeV
 
-    def __init__(self, name, ty, st, modes):
+    def __init__(self, name, ty, st, modes, mctruth=None):
         """ Constructor """
+        self.DsID = 431
+        self.Dsj0ID = 10431
+        self.Dsj1ID = 20433
+
+        if mctruth is None:
+            gha = GenHepAnalyser(self.dschain)
+            self.mctruth = gha.data
+        else:
+            self.mctruth = np.load(mctruth)
+        self.truth = {
+            'idx' : 0, 'exev' : (None, None), # EXp, EVtn
+            'mode' : None, 'dsmode' : None}
         self.name = name
         self.ty = ty
         self.st = str(st)
@@ -33,13 +46,34 @@ class ModeSplitter(object):
         self.getChain()
         self.initVarDicts()
 
+    def setMCTruth(self):
+        """ Find out Ds and Dsj modes in an event """
+        if self.truth['exev'] == (self.info.exp, self.info.evtn):
+            return
+        self.truth['exev'] = (self.info.exp, self.info.evtn)
+        # print(self.truth['exev'])
+        print(self.mctruth[self.truth['idx']])
+        print((self.info.exp, self.info.evtn))
+        exp, evtn = self.mctruth[self.truth['idx']]['exp'], self.mctruth[self.truth['idx']]['evtn']
+        assert((self.info.exp, self.info.evtn) == (exp, evtn))
+        self.truth['mode'], self.truth['dsmode'] = -1, -1
+        while ((self.mctruth[self.truth['idx']]['exp'],
+                self.mctruth[self.truth['idx']]['evtn']) == (exp, evtn)) and (self.truth['idx'] < len(self.mctruth)):
+            self.truth['idx'] = self.truth['idx'] + 1
+            if abs(self.mctruth[self.truth['idx']]['id']) == self.DsID:
+                self.truth['dsmode'] = self.mctruth[self.truth['idx']]['mode']
+            elif abs(self.mctruth[self.truth['idx']]['id']) == self.Dsj0ID:
+                self.truth['mode'] = self.mctruth[self.truth['idx']]['mode']
+            elif abs(self.mctruth[self.truth['idx']]['id']) == self.Dsj1ID:
+                self.truth['mode'] = self.mctruth[self.truth['idx']]['mode'] + 1000
+        
     def initVarDicts(self):
         """ Define variables """
         self.branches = {
         'common' : {  # all modes
             'i' : {
                 'exp'   : lambda: self.info.exp,
-                'run'   : lambda: self.info.run,
+                # 'run'   : lambda: self.info.run,
                 'evtn'  : lambda: self.info.evtn,
                 'mode'  : lambda: self.evt.mode,
                 'dsmode': lambda: self.evt.mode_ds,
@@ -60,8 +94,8 @@ class ModeSplitter(object):
                 'h_ds_flag': lambda: self.mcevt.h_ds_gen.flag,
                 'ds_flag'  : lambda: self.mcevt.ds_gen.flag,
                 'dsj_flag' : lambda: self.mcevt.dsj_gen.flag,
-                'tmode'    : lambda: self.mcevt.gam_dsj_gen.id,
-                'tdsmode'  : lambda: self.mcevt.gam_dsj_gen.flag
+                'tmode'    : lambda: self.truth['mode'],
+                'tdsmode'  : lambda: self.truth['dsmode']
             },
             'iv' : {
                 'h_ds_ch'  : lambda: self.mcevt.h_ds_gen.chain,
@@ -164,7 +198,6 @@ class ModeSplitter(object):
             12 : ['common', 'pi+pi-', 'gamDsst'],  # Ds pi+ pi- gamma
             13 : ['common', 'pi0pi0', 'gamDsst'],  # Ds pi0 pi0 gamma
         }
-
         self.modeDict = {mode : mdict[mode] for mode in self.modes}
 
     def getBranches(self, mode, mc):
@@ -206,6 +239,9 @@ class ModeSplitter(object):
         # evl = TEventList(gDirectory.Get('evlist'))
         # self.t.SetEventList(gDirectory.Get('evlist'))
         for idx, _ in enumerate(self.chain):
+            self.setMCTruth()
+            # if idx == 10:
+            #     break
             if idx % 10000 == 0:
                 print('{} events'.format(idx))
             self.fillEvent(self.evt.mode)
@@ -260,7 +296,7 @@ def main():
     """ Unit test """
     gSystem.Load('libRecoObj.so')
     gSystem.Load('libdsjdata.so')
-    ms = ModeSplitter('dsjinc', 'dsst0', 1, [0, 1, 2, 3, 10, 11, 12, 13])
+    ms = ModeSplitter('dsjinc', 'dsst0', 1, [0, 1, 2, 3, 10, 11, 12, 13], 'mctruth.npy')
     ms.split()
     # ms = ModeSplitter('dsjinc', 'dsst1', 1, [0, 1, 2, 3, 10, 11, 12, 13])
     # ms.split()
