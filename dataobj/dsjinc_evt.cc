@@ -12,6 +12,7 @@ void dsjinc_evt::Clear(void) {
     mode_ds = -1; mode = -1; flv = 0;
     m = 0; mds = 0; pcmsds = 0; dmdsst = 0; mvec = 0;
     cos_hel_dsj = -2.; cos_hel_vec = -2.;
+    mchildren = 0.;
 
     gam_dsj.Clear();
     gam_dsst.Clear();

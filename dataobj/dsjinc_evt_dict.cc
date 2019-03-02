@@ -58,7 +58,7 @@ namespace ROOT {
       ::EvtInfo *ptr = 0;
       static ::TVirtualIsAProxy* isa_proxy = new ::TInstrumentedIsAProxy< ::EvtInfo >(0);
       static ::ROOT::TGenericClassInfo 
-         instance("EvtInfo", ::EvtInfo::Class_Version(), "mytools/datastructures.h", 6,
+         instance("EvtInfo", ::EvtInfo::Class_Version(), "EvtInfo.h", 6,
                   typeid(::EvtInfo), ::ROOT::Internal::DefineBehavior(ptr, ptr),
                   &::EvtInfo::Dictionary, isa_proxy, 16,
                   sizeof(::EvtInfo) );
@@ -92,7 +92,7 @@ namespace ROOT {
       ::SFWMInfo *ptr = 0;
       static ::TVirtualIsAProxy* isa_proxy = new ::TInstrumentedIsAProxy< ::SFWMInfo >(0);
       static ::ROOT::TGenericClassInfo 
-         instance("SFWMInfo", ::SFWMInfo::Class_Version(), "mytools/datastructures.h", 6,
+         instance("SFWMInfo", ::SFWMInfo::Class_Version(), "SFWMInfo.h", 6,
                   typeid(::SFWMInfo), ::ROOT::Internal::DefineBehavior(ptr, ptr),
                   &::SFWMInfo::Dictionary, isa_proxy, 16,
                   sizeof(::SFWMInfo) );
@@ -126,7 +126,7 @@ namespace ROOT {
       ::EvtShape *ptr = 0;
       static ::TVirtualIsAProxy* isa_proxy = new ::TInstrumentedIsAProxy< ::EvtShape >(0);
       static ::ROOT::TGenericClassInfo 
-         instance("EvtShape", ::EvtShape::Class_Version(), "mytools/datastructures.h", 7,
+         instance("EvtShape", ::EvtShape::Class_Version(), "EvtShape.h", 7,
                   typeid(::EvtShape), ::ROOT::Internal::DefineBehavior(ptr, ptr),
                   &::EvtShape::Dictionary, isa_proxy, 16,
                   sizeof(::EvtShape) );
@@ -160,7 +160,7 @@ namespace ROOT {
       ::GammaInfo *ptr = 0;
       static ::TVirtualIsAProxy* isa_proxy = new ::TInstrumentedIsAProxy< ::GammaInfo >(0);
       static ::ROOT::TGenericClassInfo 
-         instance("GammaInfo", ::GammaInfo::Class_Version(), "mytools/datastructures.h", 6,
+         instance("GammaInfo", ::GammaInfo::Class_Version(), "GammaInfo.h", 6,
                   typeid(::GammaInfo), ::ROOT::Internal::DefineBehavior(ptr, ptr),
                   &::GammaInfo::Dictionary, isa_proxy, 16,
                   sizeof(::GammaInfo) );
@@ -194,7 +194,7 @@ namespace ROOT {
       ::GenHepEvt *ptr = 0;
       static ::TVirtualIsAProxy* isa_proxy = new ::TInstrumentedIsAProxy< ::GenHepEvt >(0);
       static ::ROOT::TGenericClassInfo 
-         instance("GenHepEvt", ::GenHepEvt::Class_Version(), "mytools/datastructures.h", 7,
+         instance("GenHepEvt", ::GenHepEvt::Class_Version(), "GenHepEvt.h", 7,
                   typeid(::GenHepEvt), ::ROOT::Internal::DefineBehavior(ptr, ptr),
                   &::GenHepEvt::Dictionary, isa_proxy, 16,
                   sizeof(::GenHepEvt) );
@@ -228,7 +228,7 @@ namespace ROOT {
       ::GenParticleInfo *ptr = 0;
       static ::TVirtualIsAProxy* isa_proxy = new ::TInstrumentedIsAProxy< ::GenParticleInfo >(0);
       static ::ROOT::TGenericClassInfo 
-         instance("GenParticleInfo", ::GenParticleInfo::Class_Version(), "mytools/datastructures.h", 6,
+         instance("GenParticleInfo", ::GenParticleInfo::Class_Version(), "GenParticleInfo.h", 6,
                   typeid(::GenParticleInfo), ::ROOT::Internal::DefineBehavior(ptr, ptr),
                   &::GenParticleInfo::Dictionary, isa_proxy, 16,
                   sizeof(::GenParticleInfo) );
@@ -262,7 +262,7 @@ namespace ROOT {
       ::HamletTag *ptr = 0;
       static ::TVirtualIsAProxy* isa_proxy = new ::TInstrumentedIsAProxy< ::HamletTag >(0);
       static ::ROOT::TGenericClassInfo 
-         instance("HamletTag", ::HamletTag::Class_Version(), "mytools/datastructures.h", 6,
+         instance("HamletTag", ::HamletTag::Class_Version(), "HamletTag.h", 6,
                   typeid(::HamletTag), ::ROOT::Internal::DefineBehavior(ptr, ptr),
                   &::HamletTag::Dictionary, isa_proxy, 16,
                   sizeof(::HamletTag) );
@@ -296,7 +296,7 @@ namespace ROOT {
       ::IPBoost *ptr = 0;
       static ::TVirtualIsAProxy* isa_proxy = new ::TInstrumentedIsAProxy< ::IPBoost >(0);
       static ::ROOT::TGenericClassInfo 
-         instance("IPBoost", ::IPBoost::Class_Version(), "mytools/datastructures.h", 6,
+         instance("IPBoost", ::IPBoost::Class_Version(), "IPBoost.h", 6,
                   typeid(::IPBoost), ::ROOT::Internal::DefineBehavior(ptr, ptr),
                   &::IPBoost::Dictionary, isa_proxy, 16,
                   sizeof(::IPBoost) );
@@ -330,7 +330,7 @@ namespace ROOT {
       ::Ks0Info *ptr = 0;
       static ::TVirtualIsAProxy* isa_proxy = new ::TInstrumentedIsAProxy< ::Ks0Info >(0);
       static ::ROOT::TGenericClassInfo 
-         instance("Ks0Info", ::Ks0Info::Class_Version(), "mytools/datastructures.h", 6,
+         instance("Ks0Info", ::Ks0Info::Class_Version(), "Ks0Info.h", 6,
                   typeid(::Ks0Info), ::ROOT::Internal::DefineBehavior(ptr, ptr),
                   &::Ks0Info::Dictionary, isa_proxy, 16,
                   sizeof(::Ks0Info) );
@@ -364,7 +364,7 @@ namespace ROOT {
       ::Pi0Info *ptr = 0;
       static ::TVirtualIsAProxy* isa_proxy = new ::TInstrumentedIsAProxy< ::Pi0Info >(0);
       static ::ROOT::TGenericClassInfo 
-         instance("Pi0Info", ::Pi0Info::Class_Version(), "mytools/datastructures.h", 6,
+         instance("Pi0Info", ::Pi0Info::Class_Version(), "Pi0Info.h", 6,
                   typeid(::Pi0Info), ::ROOT::Internal::DefineBehavior(ptr, ptr),
                   &::Pi0Info::Dictionary, isa_proxy, 16,
                   sizeof(::Pi0Info) );
@@ -398,7 +398,7 @@ namespace ROOT {
       ::TrackInfo *ptr = 0;
       static ::TVirtualIsAProxy* isa_proxy = new ::TInstrumentedIsAProxy< ::TrackInfo >(0);
       static ::ROOT::TGenericClassInfo 
-         instance("TrackInfo", ::TrackInfo::Class_Version(), "mytools/datastructures.h", 6,
+         instance("TrackInfo", ::TrackInfo::Class_Version(), "TrackInfo.h", 6,
                   typeid(::TrackInfo), ::ROOT::Internal::DefineBehavior(ptr, ptr),
                   &::TrackInfo::Dictionary, isa_proxy, 16,
                   sizeof(::TrackInfo) );
@@ -432,7 +432,7 @@ namespace ROOT {
       ::TrackInfo2 *ptr = 0;
       static ::TVirtualIsAProxy* isa_proxy = new ::TInstrumentedIsAProxy< ::TrackInfo2 >(0);
       static ::ROOT::TGenericClassInfo 
-         instance("TrackInfo2", ::TrackInfo2::Class_Version(), "mytools/datastructures.h", 9,
+         instance("TrackInfo2", ::TrackInfo2::Class_Version(), "TrackInfo2.h", 9,
                   typeid(::TrackInfo2), ::ROOT::Internal::DefineBehavior(ptr, ptr),
                   &::TrackInfo2::Dictionary, isa_proxy, 16,
                   sizeof(::TrackInfo2) );
@@ -466,7 +466,7 @@ namespace ROOT {
       ::VertexInfo *ptr = 0;
       static ::TVirtualIsAProxy* isa_proxy = new ::TInstrumentedIsAProxy< ::VertexInfo >(0);
       static ::ROOT::TGenericClassInfo 
-         instance("VertexInfo", ::VertexInfo::Class_Version(), "mytools/datastructures.h", 6,
+         instance("VertexInfo", ::VertexInfo::Class_Version(), "VertexInfo.h", 6,
                   typeid(::VertexInfo), ::ROOT::Internal::DefineBehavior(ptr, ptr),
                   &::VertexInfo::Dictionary, isa_proxy, 16,
                   sizeof(::VertexInfo) );
@@ -500,7 +500,7 @@ namespace ROOT {
       ::H0Info *ptr = 0;
       static ::TVirtualIsAProxy* isa_proxy = new ::TInstrumentedIsAProxy< ::H0Info >(0);
       static ::ROOT::TGenericClassInfo 
-         instance("H0Info", ::H0Info::Class_Version(), "mytools/datastructures.h", 9,
+         instance("H0Info", ::H0Info::Class_Version(), "H0Info.h", 9,
                   typeid(::H0Info), ::ROOT::Internal::DefineBehavior(ptr, ptr),
                   &::H0Info::Dictionary, isa_proxy, 16,
                   sizeof(::H0Info) );
@@ -2127,6 +2127,7 @@ void dsjinc_evt::Streamer(TBuffer &R__b)
       R__b >> mvec;
       R__b >> cos_hel_dsj;
       R__b >> cos_hel_vec;
+      R__b >> mchildren;
       gam_dsj.Streamer(R__b);
       gam_dsst.Streamer(R__b);
       pi0_dsj.Streamer(R__b);
@@ -2148,6 +2149,7 @@ void dsjinc_evt::Streamer(TBuffer &R__b)
       R__b << mvec;
       R__b << cos_hel_dsj;
       R__b << cos_hel_vec;
+      R__b << mchildren;
       gam_dsj.Streamer(R__b);
       gam_dsst.Streamer(R__b);
       pi0_dsj.Streamer(R__b);
@@ -2452,7 +2454,7 @@ namespace {
     static const char* includePaths[] = {
 "/home/belle/vitaly/belle/include",
 "/usr/local/include",
-"/home/vitaly/work/DsjInc/include/",
+"/home/vitaly/work/DsjInc/dataobj/",
 0
     };
     static const char* fwdDeclCode = R"DICTFWDDCLS(
@@ -2461,20 +2463,20 @@ namespace {
 #pragma clang diagnostic ignored "-Wignored-attributes"
 #pragma clang diagnostic ignored "-Wreturn-type-c-linkage"
 extern int __Cling_Autoloading_Map;
-class __attribute__((annotate("$clingAutoload$mytools/datastructures.h")))  __attribute__((annotate("$clingAutoload$dsjinc_evt.h")))  EvtInfo;
-class __attribute__((annotate("$clingAutoload$mytools/datastructures.h")))  __attribute__((annotate("$clingAutoload$dsjinc_evt.h")))  SFWMInfo;
-class __attribute__((annotate("$clingAutoload$mytools/datastructures.h")))  __attribute__((annotate("$clingAutoload$dsjinc_evt.h")))  EvtShape;
-class __attribute__((annotate("$clingAutoload$mytools/datastructures.h")))  __attribute__((annotate("$clingAutoload$dsjinc_evt.h")))  GammaInfo;
-class __attribute__((annotate("$clingAutoload$mytools/datastructures.h")))  __attribute__((annotate("$clingAutoload$dsjinc_evt.h")))  GenHepEvt;
-class __attribute__((annotate("$clingAutoload$mytools/datastructures.h")))  __attribute__((annotate("$clingAutoload$dsjinc_evt.h")))  GenParticleInfo;
-class __attribute__((annotate("$clingAutoload$mytools/datastructures.h")))  __attribute__((annotate("$clingAutoload$dsjinc_evt.h")))  HamletTag;
-class __attribute__((annotate("$clingAutoload$mytools/datastructures.h")))  __attribute__((annotate("$clingAutoload$dsjinc_evt.h")))  IPBoost;
-class __attribute__((annotate("$clingAutoload$mytools/datastructures.h")))  __attribute__((annotate("$clingAutoload$dsjinc_evt.h")))  Ks0Info;
-class __attribute__((annotate("$clingAutoload$mytools/datastructures.h")))  __attribute__((annotate("$clingAutoload$dsjinc_evt.h")))  Pi0Info;
-class __attribute__((annotate("$clingAutoload$mytools/datastructures.h")))  __attribute__((annotate("$clingAutoload$dsjinc_evt.h")))  TrackInfo;
-class __attribute__((annotate("$clingAutoload$mytools/datastructures.h")))  __attribute__((annotate("$clingAutoload$dsjinc_evt.h")))  TrackInfo2;
-class __attribute__((annotate("$clingAutoload$mytools/datastructures.h")))  __attribute__((annotate("$clingAutoload$dsjinc_evt.h")))  VertexInfo;
-class __attribute__((annotate("$clingAutoload$mytools/datastructures.h")))  __attribute__((annotate("$clingAutoload$dsjinc_evt.h")))  H0Info;
+class __attribute__((annotate("$clingAutoload$EvtInfo.h")))  __attribute__((annotate("$clingAutoload$dsjinc_evt.h")))  EvtInfo;
+class __attribute__((annotate("$clingAutoload$SFWMInfo.h")))  __attribute__((annotate("$clingAutoload$dsjinc_evt.h")))  SFWMInfo;
+class __attribute__((annotate("$clingAutoload$EvtShape.h")))  __attribute__((annotate("$clingAutoload$dsjinc_evt.h")))  EvtShape;
+class __attribute__((annotate("$clingAutoload$GammaInfo.h")))  __attribute__((annotate("$clingAutoload$dsjinc_evt.h")))  GammaInfo;
+class __attribute__((annotate("$clingAutoload$GenHepEvt.h")))  __attribute__((annotate("$clingAutoload$dsjinc_evt.h")))  GenHepEvt;
+class __attribute__((annotate("$clingAutoload$GenParticleInfo.h")))  __attribute__((annotate("$clingAutoload$dsjinc_evt.h")))  GenParticleInfo;
+class __attribute__((annotate("$clingAutoload$HamletTag.h")))  __attribute__((annotate("$clingAutoload$dsjinc_evt.h")))  HamletTag;
+class __attribute__((annotate("$clingAutoload$IPBoost.h")))  __attribute__((annotate("$clingAutoload$dsjinc_evt.h")))  IPBoost;
+class __attribute__((annotate("$clingAutoload$Ks0Info.h")))  __attribute__((annotate("$clingAutoload$dsjinc_evt.h")))  Ks0Info;
+class __attribute__((annotate("$clingAutoload$Pi0Info.h")))  __attribute__((annotate("$clingAutoload$dsjinc_evt.h")))  Pi0Info;
+class __attribute__((annotate("$clingAutoload$TrackInfo.h")))  __attribute__((annotate("$clingAutoload$dsjinc_evt.h")))  TrackInfo;
+class __attribute__((annotate("$clingAutoload$TrackInfo2.h")))  __attribute__((annotate("$clingAutoload$dsjinc_evt.h")))  TrackInfo2;
+class __attribute__((annotate("$clingAutoload$VertexInfo.h")))  __attribute__((annotate("$clingAutoload$dsjinc_evt.h")))  VertexInfo;
+class __attribute__((annotate("$clingAutoload$H0Info.h")))  __attribute__((annotate("$clingAutoload$dsjinc_evt.h")))  H0Info;
 class __attribute__((annotate("$clingAutoload$dsjinc_evt.h")))  dsjinc_evt;
 class __attribute__((annotate("$clingAutoload$dsjinc_mcevt.h")))  dsjinc_mcevt;
 class __attribute__((annotate("$clingAutoload$ds_evt.h")))  ds_evt;

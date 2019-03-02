@@ -40,13 +40,15 @@ class dsjinc_evt : public TObject {
     double cos_hel_dsj;
     /// Helicity angle for phi of K*0
     double cos_hel_vec;
+    /// m(pi+ pi-), m(gamma gamma) or m(pi+ pi-)
+    double mchildren;
 
     ////////////////////////
     // * Dsj mesons FSP * //
     ////////////////////////
     /// Photon from D*sj -> D(*)s gamma
     GammaInfo gam_dsj;
-    /// Photon from D*s -> Ds gamma
+    /// Photon from D*s -> Ds gamma (gamma with smaller energy)
     GammaInfo gam_dsst;
     /// pi0 from D*sj -> D(*)s pi0 (pi0)
     Pi0Info pi0_dsj;
