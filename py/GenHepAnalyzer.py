@@ -5,50 +5,35 @@ import numpy as np
 
 from ROOT import TChain, gSystem
 
+from pdgcode import ids
+
 tuplePath = '/home/vitaly/work/DsjInc/tuples'
 
 def sigMCFile(ty, st):
     """ Get root file name """
     return glob('/'.join([tuplePath, 'signt', '_'.join(['dsjinc', 'sigmc', 'ty' + ty, 'st' + str(st), '*.root'])]))
 
-ids = {
-    'Dsj0+'  :  10431,
-    'Dsj0-'  : -10431,
-    'Dsj1+'  :  20433,
-    'Dsj1-'  : -20433,
-    'Ds+'    :  431,
-    'Ds-'    : -431,
-    'Ds*+'   :  433,
-    'Ds*-'   : -433,
-    'gamma'  :  22,
-    'pi0'    :  111,
-    'phi'    :  333,
-    'pi+'    :  211,
-    'pi-'    : -211,
-    'K+'     :  321,
-    'K-'     : -321,
-    'K*0'    :  313,
-    'K*0bar' : -313,
-    'Ks0'    :  310
-}
-
-modesDict = { 'Dsj+' : {
+modesDict = {
+    'Dsj+' : {
         0  : set([ids['Ds+'], ids['gamma']]),
         1  : set([ids['Ds+'], ids['pi0']]),
         2  : set([ids['Ds+'], ids['pi+'], ids['pi-']]),
         11 : set([ids['Ds+'], ids['pi0'], ids['gamma']]),
         12 : set([ids['Ds+'], ids['pi+'], ids['pi-'], ids['gamma']]),
-    }, 'Dsj-' : {
+    },
+    'Dsj-' : {
         0  : set([ids['Ds-'], ids['gamma']]),
         1  : set([ids['Ds-'], ids['pi0']]),
         2  : set([ids['Ds-'], ids['pi+'], ids['pi-']]),
         11 : set([ids['Ds-'], ids['pi0'], ids['gamma']]),
         12 : set([ids['Ds-'], ids['pi+'], ids['pi-'], ids['gamma']]),
-    }, 'Ds+' : {
+    },
+    'Ds+' : {
         0 : set([ids['phi'], ids['pi+']]),
         1 : set([ids['K+'] , ids['K*0bar']]),
         2 : set([ids['Ks0'], ids['K+']])
-    }, 'Ds-' : {
+    },
+    'Ds-' : {
         0 : set([ids['phi'], ids['pi-']]),
         1 : set([ids['K-'] , ids['K*0']]),
         2 : set([ids['Ks0'], ids['K-']])
