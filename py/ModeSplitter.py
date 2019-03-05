@@ -45,6 +45,7 @@ class ModeSplitter(object):
             self.mctruth = gha.data
         else:
             self.mctruth = np.load(mctruth)
+        # Current MC truth info
         self.truth = {
             'idx' : 0, 'exev' : (None, None), # EXp, EVtn
             'mode' : None, 'dsmode' : None}
@@ -53,26 +54,45 @@ class ModeSplitter(object):
         self.vars = {}
         self.initVarDicts()
 
+    def exev(self):
+        """ Shortcut for exp and event numbers """
+        return (self.info.exp, self.info.evtn)
+
+    def texev(self):
+        """ """
+        return (self.mctruth[self.truth['idx']]['exp'], self.mctruth[self.truth['idx']]['evtn'])
+
+    def tmode(self):
+        """ """
+        return self.mctruth[self.truth['idx']]['mode']
+
+    def tid(self):
+        """ """
+        return self.mctruth[self.truth['idx']]['id']
+
     def setMCTruth(self):
-        """ Find out Ds and Dsj modes in an event """
-        if self.truth['exev'] == (self.info.exp, self.info.evtn):
+        """ Find out Ds and Dsj modes in an event
+            TODO: make it readable!
+        """
+        # Skip if the event is already have seen
+        if self.truth['exev'] == self.exev():
             return
-        self.truth['exev'] = (self.info.exp, self.info.evtn)
-        # print(self.truth['exev'])
-        print(self.mctruth[self.truth['idx']])
-        print((self.info.exp, self.info.evtn))
-        exp, evtn = self.mctruth[self.truth['idx']]['exp'], self.mctruth[self.truth['idx']]['evtn']
-        assert((self.info.exp, self.info.evtn) == (exp, evtn))
+        assert(self.truth['idx'] < len(self.mctruth))
+        # Update current (exp, evtn)
+        self.truth['exev'] = self.exev()
+        # print(self.mctruth[self.truth['idx']])
+        # print(self.exev())
+        exp, evtn = self.texev()
         self.truth['mode'], self.truth['dsmode'] = -1, -1
-        while ((self.mctruth[self.truth['idx']]['exp'],
-                self.mctruth[self.truth['idx']]['evtn']) == (exp, evtn)) and (self.truth['idx'] < len(self.mctruth)):
+        while (self.texev() == (exp, evtn)) and (self.truth['idx'] < len(self.mctruth)):
             self.truth['idx'] = self.truth['idx'] + 1
-            if abs(self.mctruth[self.truth['idx']]['id']) == self.DsID:
-                self.truth['dsmode'] = self.mctruth[self.truth['idx']]['mode']
-            elif abs(self.mctruth[self.truth['idx']]['id']) == self.Dsj0ID:
-                self.truth['mode'] = self.mctruth[self.truth['idx']]['mode']
-            elif abs(self.mctruth[self.truth['idx']]['id']) == self.Dsj1ID:
-                self.truth['mode'] = self.mctruth[self.truth['idx']]['mode'] + 1000
+            abstid = abs(self.tid())
+            if abstid == self.DsID:
+                self.truth['dsmode'] = self.tmode()
+            elif abstid == self.Dsj0ID:
+                self.truth['mode'] = self.tmode()
+            elif abstid == self.Dsj1ID:
+                self.truth['mode'] = self.tmode() + 1000
         
     def initVarDicts(self):
         """ Define variables """
@@ -252,7 +272,7 @@ class ModeSplitter(object):
             self.setMCTruth()
             # if idx == 10:
             #     break
-            if idx % 100 == 0:
+            if idx % 1000 == 0:
                 print('{} events'.format(idx))
             self.fillEvent(self.evt.mode)
             self.t[self.evt.mode].Fill()
@@ -306,15 +326,18 @@ class ModeSplitter(object):
             self.dschain.Add(fname)
         self.chain.GetEvent(0)
         print('{} Dsj candidates'.format(self.chain.GetEntries()))
-        self.evt   = self.chain.evt
+        self.evt = self.chain.evt
         self.mcevt = self.chain.mcevt
-        self.info  = self.evt.info
+        self.info = self.evt.info
 
 def main():
     """ Unit test """
     gSystem.Load('libRecoObj.so')
     gSystem.Load('libdsjdata.so')
-    ms = ModeSplitter('dsjinc', 'dsst0Test', 0, [0, 1, 2, 3, 10, 11, 12, 13], 'mctruth.npy')
+    key, stream = 'dsst0Neg', 0
+    truthPath = '/home/vitaly/work/DsjInc/tuples/signt/truth'
+    truth = '/'.join([truthPath, 'mctruth_{}_{}.npy'.format(key, stream)])
+    ms = ModeSplitter('dsjinc', key, 0, [0, 1, 2, 3, 10, 11, 12, 13], truth)
     ms.split()
     # ms = ModeSplitter('dsjinc', 'dsst1', 1, [0, 1, 2, 3, 10, 11, 12, 13])
     # ms.split()

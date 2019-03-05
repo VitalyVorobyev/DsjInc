@@ -23,7 +23,7 @@ class GenEvtGraph(object):
         """ Find all decays of particles with 'id' """
         idxList = np.nonzero(self.id == idhep)[0]
         # print('idxList {}'.format(idxList))
-        if not idxList:
+        if len(idxList) == 0:
             return None
         decays = []
         for idx in idxList:
@@ -32,7 +32,7 @@ class GenEvtGraph(object):
             # print('FSP: {}'.format(fsp))
             h = hash(fsp) % 997
             if h not in GenEvtGraph.hashTbl:
-                print('New fsp: {} <- {}'.format(fsp, h))
+                print('New FS: {} <- {}'.format(fsp, h))
                 GenEvtGraph.hashTbl[h] = fsp
             decays.append((fsp, h))
         return decays

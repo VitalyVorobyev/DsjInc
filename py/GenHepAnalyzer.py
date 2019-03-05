@@ -67,13 +67,16 @@ def main():
     gSystem.Load('libRecoObj.so')
     gSystem.Load('libdsjdata.so')
     chain = TChain('ds', 'ds')
-    for fname in sigMCFile('dsst0Test', 0):
+    key, stream = 'dsst0Neg', 0
+    for fname in sigMCFile(key, stream):
+        print(fname)
         chain.Add(fname)
     print('{} Ds candidates'.format(chain.GetEntries()))
     gha = GenHepAnalyser(chain)
     data = gha.run()
     print(data[:10])
-    np.save('mctruth.npy', data)
+    truthPath = '/home/vitaly/work/DsjInc/tuples/signt/truth'
+    np.save('/'.join([truthPath, 'mctruth_{}_{}.npy'.format(key, stream)]), data)
 
     print('Hash table:')
     for h, fsp in GenEvtGraph.hashTbl.iteritems():
