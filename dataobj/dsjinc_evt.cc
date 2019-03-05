@@ -1,5 +1,4 @@
 #include "dsjinc_evt.h"
-#include <cmath>
 
 ClassImp(dsjinc_evt)
 

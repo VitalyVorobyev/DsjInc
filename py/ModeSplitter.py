@@ -15,6 +15,10 @@ from GenHepAnalyzer import GenHepAnalyser
 
 tuplePath = '/home/vitaly/work/DsjInc/tuples'
 
+verbLvl = 5
+debugLvl = 10
+infoLvl = 0
+
 def sigMCFile(ty, st):
     """ Get root file name """
     return glob('/'.join([tuplePath, 'signt', '_'.join(['dsjinc', 'sigmc', 'ty' + ty, 'st' + str(st), '*.root'])]))
@@ -29,6 +33,13 @@ class ModeSplitter(object):
         self.Dsj0ID = 10431
         self.Dsj1ID = 20433
 
+        self.name = name
+        self.ty = ty
+        self.st = str(st)
+        self.modes = modes
+
+        self.getChain()
+
         if mctruth is None:
             gha = GenHepAnalyser(self.dschain)
             self.mctruth = gha.data
@@ -37,13 +48,9 @@ class ModeSplitter(object):
         self.truth = {
             'idx' : 0, 'exev' : (None, None), # EXp, EVtn
             'mode' : None, 'dsmode' : None}
-        self.name = name
-        self.ty = ty
-        self.st = str(st)
-        self.modes = modes
+        
         self.t = {}
         self.vars = {}
-        self.getChain()
         self.initVarDicts()
 
     def setMCTruth(self):
@@ -88,7 +95,7 @@ class ModeSplitter(object):
                 'cos_hel_vec': lambda: self.evt.cos_hel_vec
             }
         },
-        'commonMC' : {
+        'commonMC' : {  # all modes MC info
             'i'  : {
                 'h_ds_id'  : lambda: self.mcevt.h_ds_gen.id,
                 'h_ds_flag': lambda: self.mcevt.h_ds_gen.flag,
@@ -101,13 +108,13 @@ class ModeSplitter(object):
                 'h_ds_ch'  : lambda: self.mcevt.h_ds_gen.chain,
             }
         },
-        'gamDsj' : {
+        'gamDsj' : {  # Dsj -> Ds _gamma_ X
             'f' : {
                 'gam_e'     : lambda: self.evt.gam_dsj.e,
                 'gam_costh' : lambda: self.evt.gam_dsj.costh
             }
         },
-        'gamDsjMC' : {
+        'gamDsjMC' : {  # Dsj -> Ds _gamma_ X MC info
             # 'i' : {
             #     'gam_id'   : lambda: self.mcevt.gam_dsj_gen.id,
             #     'gam_flag' : lambda: self.mcevt.gam_dsj_gen.flag
@@ -116,13 +123,13 @@ class ModeSplitter(object):
                 'gam_ch' : lambda: self.mcevt.gam_dsj_gen.chain
             }
         },
-        'pi0Dsj' : {
+        'pi0Dsj' : {  # Dsj -> Ds _pi0_ X
             'f' : {
                 'pi0_eg1'   : lambda: min(self.evt.pi0_dsj.eg1, self.evt.pi0_dsj.eg2),
                 'pi0_eg2'   : lambda: max(self.evt.pi0_dsj.eg1, self.evt.pi0_dsj.eg2)
             }
         },
-        'pi0DsjMC' : {
+        'pi0DsjMC' : {  # Dsj -> Ds _pi0_ X MC info
             'i' : {
                 'pi0_id'   : lambda: self.mcevt.pi0_dsj_gen.id,
                 'pi0_flag' : lambda: self.mcevt.pi0_dsj_gen.flag
@@ -131,7 +138,7 @@ class ModeSplitter(object):
                 'pi0_ch' : lambda: self.mcevt.pi0_dsj_gen.chain
             }
         },
-        'pi+pi-' : {
+        'pi+pi-' : {  # Dsj -> Ds _pi+ pi-_
             'f' : {
                 'pip_atckpi' : lambda: self.evt.pip_dsj.atckpi,
                 'pip_px'     : lambda: self.evt.pip_dsj.p[0],
@@ -140,10 +147,11 @@ class ModeSplitter(object):
                 'pim_atckpi' : lambda: self.evt.pim_dsj.atckpi,
                 'pim_px'     : lambda: self.evt.pim_dsj.p[0],
                 'pim_py'     : lambda: self.evt.pim_dsj.p[1],
-                'pim_pz'     : lambda: self.evt.pim_dsj.p[2]
+                'pim_pz'     : lambda: self.evt.pim_dsj.p[2],
+                'mchs'       : lambda: self.evt.mchildren
             }
         },
-        'pi+pi-MC' : {
+        'pi+pi-MC' : {  # Dsj -> Ds _pi+ pi-_ MC info
             'i' : {
                 'pip_id'   : lambda: self.mcevt.pip_dsj_gen.id,
                 'pip_flag' : lambda: self.mcevt.pip_dsj_gen.flag,
@@ -155,13 +163,14 @@ class ModeSplitter(object):
                 'pim_ch' : lambda: self.mcevt.pim_dsj_gen.chain
             }
         },
-        'pi0pi0' : {
+        'pi0pi0' : {  # Dsj -> Ds _pi0 pi0_
             'f' : {
                 'pi0lo_eg1' : lambda: min(self.evt.pi0lo_dsj.eg1, self.evt.pi0lo_dsj.eg2),
-                'pi0lo_eg2' : lambda: max(self.evt.pi0lo_dsj.eg1, self.evt.pi0lo_dsj.eg2)
+                'pi0lo_eg2' : lambda: max(self.evt.pi0lo_dsj.eg1, self.evt.pi0lo_dsj.eg2),
+                'mchs'      : lambda: self.evt.mchildren
             }
         },
-        'pi0pi0MC' : {
+        'pi0pi0MC' : {  # Dsj -> Ds _pi0 pi0_ MC info
             'i' : {
                 'pi0lo_id'   : lambda: self.mcevt.pi0lo_dsj_gen.id,
                 'pi0lo_flag' : lambda: self.mcevt.pi0lo_dsj_gen.flag
@@ -170,14 +179,15 @@ class ModeSplitter(object):
                 'pi0lo_ch' : lambda: self.mcevt.pi0lo_dsj_gen.chain
             }
         },
-        'gamDsst' : {
+        'gamDsst' : {  # Dsj -> _Ds*_ X
             'f' : {
                 'gam_dsst_e'     : lambda: self.evt.gam_dsst.e,
                 'gam_dsst_costh' : lambda: self.evt.gam_dsst.costh,
-                'dmdsst'         : lambda: self.evt.dmdsst
+                'dmdsst'         : lambda: self.evt.dmdsst,
+                'mchs'           : lambda: self.evt.mchildren
             }
         },
-        'gamDsstMC' : {
+        'gamDsstMC' : {  # Dsj -> _Ds*_ X MC info
             # 'i' : {
             #     'gamDsst_id'   : lambda: self.mcevt.gam_dsst_gen.id,
             #     'gamDsst_flag' : lambda: self.mcevt.gam_dsst_gen.flag
@@ -242,7 +252,7 @@ class ModeSplitter(object):
             self.setMCTruth()
             # if idx == 10:
             #     break
-            if idx % 10000 == 0:
+            if idx % 100 == 0:
                 print('{} events'.format(idx))
             self.fillEvent(self.evt.mode)
             self.t[self.evt.mode].Fill()
@@ -268,14 +278,22 @@ class ModeSplitter(object):
 
     def fillEvent(self, mode):
         """ Fill common variables """
+        if verbLvl > debugLvl:
+            print('fillEvent')
         filler = self.getFiller(mode, True)
         for var, fcn in filler['i']:
+            if verbLvl > debugLvl:
+                print(var)
             self.vars[var][0] = fcn()
 
         for var, fcn in filler['f']:
+            if verbLvl > debugLvl:
+                print(var)
             self.vars[var][0] = fcn()
 
         for var, fcn in filler['iv']:
+            if verbLvl > debugLvl:
+                print(var)
             self.vars[var][:] = fcn()
 
     def getChain(self):
@@ -296,7 +314,7 @@ def main():
     """ Unit test """
     gSystem.Load('libRecoObj.so')
     gSystem.Load('libdsjdata.so')
-    ms = ModeSplitter('dsjinc', 'dsst0', 1, [0, 1, 2, 3, 10, 11, 12, 13], 'mctruth.npy')
+    ms = ModeSplitter('dsjinc', 'dsst0Test', 0, [0, 1, 2, 3, 10, 11, 12, 13], 'mctruth.npy')
     ms.split()
     # ms = ModeSplitter('dsjinc', 'dsst1', 1, [0, 1, 2, 3, 10, 11, 12, 13])
     # ms.split()

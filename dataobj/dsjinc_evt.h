@@ -59,7 +59,7 @@ class dsjinc_evt : public TObject {
     /// pi- from D*sj -> D(*)s pi+ pi-
     TrackInfo pim_dsj;
 
-    ClassDef(dsjinc_evt, 2)
+    ClassDef(dsjinc_evt, 3)
 };
 
 #ifdef __MAKECINT__
